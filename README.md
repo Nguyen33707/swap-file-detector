@@ -44,3 +44,10 @@ The trade-off: this library only reads `/proc/swaps`. It does not cross-referenc
 - An empty `/proc/swaps` (header only, no data lines) yields an empty array, not an error.
 - Malformed data lines — wrong column count, unrecognised type, or non-integer sizes — are silently skipped rather than thrown. A corrupt header, however, throws, because it suggests the kernel format has changed in a way the caller should know about.
 - The header is matched case-insensitively against the five canonical column names, so minor formatting differences from different kernel versions are tolerated.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
